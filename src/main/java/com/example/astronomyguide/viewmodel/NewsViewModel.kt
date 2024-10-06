@@ -20,4 +20,8 @@ class NewsViewModel : ViewModel() {
         newsState.clear()
         newsState.addAll(_newsList.map { NewsItem(it, 0) })
     }
+    fun incrementLikes(index: Int) {
+        newsState[index] = newsState[index].copy(likes = newsState[index].likes + 1)
+    }
+
 }
