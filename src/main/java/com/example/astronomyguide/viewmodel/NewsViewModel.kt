@@ -1,27 +1,32 @@
-package com.example.astronomyguide.viewmodel
-
-import androidx.compose.runtime.mutableStateListOf
-import androidx.lifecycle.ViewModel
-
-data class NewsItem(val text: String, var likes: Int)
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class NewsViewModel : ViewModel() {
 
-    private val _newsList = listOf("Новость 1", "Новость 2", "Новость 3", "Новость 4")
-
-    // Состояние новостей как список для Compose
-    val newsState = mutableStateListOf<NewsItem>()
+    // Остальной код без изменений
 
     init {
         resetNews()
+        startNewsUpdater()
     }
 
-    private fun resetNews() {
-        newsState.clear()
-        newsState.addAll(_newsList.map { NewsItem(it, 0) })
-    }
-    fun incrementLikes(index: Int) {
-        newsState[index] = newsState[index].copy(likes = newsState[index].likes + 1)
+    private fun startNewsUpdater() {
+        CoroutineScope(Dispatchers.IO).launch {
+            while (true) {
+                delay(5000) // Обновление одной случайной новости каждые 5 секунд
+                updateRandomNews()
+            }
+        }
     }
 
+    private fun updateRandomNews() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val indexToUpdate = Random.nextInt(0, newsState.size)
+            val randomNews = _newsList.random()
+            newsState[indexToUpdate] = NewsItem(randomNews, newsState[indexToUpdate].likes)
+        }
+    }
 }
